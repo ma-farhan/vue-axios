@@ -18,25 +18,41 @@
 
 
     <v-data-table 
-      :headers="headers" 
-      :items="filteredPayload" 
-      item-value="name" 
-      class="elevation-1" 
-      items-per-page="5"
-    >
-      <template #[`item.actions`]="{ item }">
-        <v-icon class="me-2" size="small" @click="editItem(item)">
-          mdi-pencil
-        </v-icon>
-        <v-icon size="small" @click="deleteItem(item)">
-          mdi-delete
-        </v-icon>
-      </template>
+  :headers="headers" 
+  :items="filteredPayload" 
+  item-value="id" 
+  class="elevation-1" 
+  items-per-page="5"
+>
+  <template #[`item.image`]="{ item }">
+    <v-img :src="item.image" max-height="50" max-width="50" alt="Product Image"></v-img>
+  </template>
 
-      <template v-slot:no-data>
-        <v-btn color="primary" @click="fetchData">Reload Data</v-btn>
-      </template>
-    </v-data-table>
+ 
+  <template #[`item.count`]="{ item }">
+    <v-chip :style="{ backgroundColor: item.count < 300 ? '#678515' : '#156a85' }" class="text-white">
+        {{ item.count }}
+    </v-chip>
+</template>
+
+
+
+ 
+  <template #[`item.actions`]="{ item }">
+    <v-icon class="me-2" size="small" @click="editItem(item)">
+      mdi-pencil
+    </v-icon>
+    <v-icon size="small" @click="deleteItem(item)">
+      mdi-delete
+    </v-icon>
+  </template>
+
+
+  <template v-slot:no-data>
+    <v-btn color="primary" @click="fetchData">Reload Data</v-btn>
+  </template>
+</v-data-table>
+
 
     <v-dialog v-model="dialog" max-width="500">
       <v-card>
@@ -84,17 +100,17 @@ const dialogDelete = ref(false);
 const loading = ref(false);
 
 const headers = [
-  { title: "Name", key: "name" },
-  { title: "Address", key: "address" },
-  { title: "Zip", key: "zip" },
-  { title: "Country", key: "country" },
-  { title: "Employee Count", key: "employeeCount" },
-  { title: "Industry", key: "industry" },
-  { title: "Market Cap", key: "marketCap" },
-  { title: "Domain", key: "domain" },
-  { title: "Ceo Name", key: "ceoName" },
-  { title: "Actions", key: "actions",sortable:false}
+  { title: "ID", key: "id" },
+  { title: "Title", key: "title" },
+  { title: "Price", key: "price" },
+  { title: "Description", key: "description" },
+  { title: "Category", key: "category" },
+  { title: "Image", key: "image" },
+  { title: "Rate", key: "rate" },
+  { title: "Count", key: "count" },
+  { title: "Actions", key: "actions", sortable: false },
 ];
+
 
 
 const payload = ref([]);
@@ -133,20 +149,20 @@ const filteredPayload = computed(() => {
 });
 
 
+
 const fetchData = async () => {
   loading.value = true;
   try {
-    const response = await axios.get("https://fake-json-api.mock.beeceptor.com/companies");
+    const response = await axios.get("https://fakestoreapi.com/products");
     payload.value = response.data.map((item) => ({
-      name: item.name || "N/A",
-      address: item.address || 0,
-      zip: item.zip || 0,
-      country: item.country || "N/A",
-      employeeCount: item.employeeCount || "N/A",
-      industry: item.industry || "N/A",
-      marketCap: item.marketCap || "N/A",
-      domain: item.domain || "N/A",
-      ceoName: item.ceoName || "N/A",
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      description: item.description,
+      category: item.category,
+      image: item.image,
+      rate: item.rating?.rate || 0, 
+      count: item.rating?.count || 0,
     }));
   } catch (error) {
     console.error("Error fetching data:", error);
